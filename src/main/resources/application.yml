@@ -9,3 +9,7 @@ openai:
     model: ${ASSISTANT_MODEL} #gpt-4
     instructions: ${ASSISTANT_INSTRUCTIONS} # You are a sales assistant...
     id: ${ASSISTANT_ID} #asst_RkHRBbRNfqGiMquar2bFZEDt
+
+logging:
+  level:
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE

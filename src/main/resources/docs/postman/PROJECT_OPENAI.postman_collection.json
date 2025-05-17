@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "01a85629-9edf-484b-b110-6f4a7f208c71",
+		"name": "PROJECT_OPENAI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22120778"
+	},
+	"item": [
+		{
+			"name": "New Assistant",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assistant/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assistant",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Assistant by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/assistant/asst_1ulIul67WBQS9N2Phwen7MHY",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assistant",
+						"asst_1ulIul67WBQS9N2Phwen7MHY"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Files for Assistant",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "OpenAI-Beta",
+						"value": "assistants=v2",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/assistant/asst_1ulIul67WBQS9N2Phwen7MHY/files",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assistant",
+						"asst_1ulIul67WBQS9N2Phwen7MHY",
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start Chat",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"assistantId\": \"asst_1ulIul67WBQS9N2Phwen7MHY\",\r\n    \"threadId\": \"thread_GLUrU6FLQWb9BmAqrSEN6MVs\",\r\n    \"message\": \"Me recomende então um ar condicionado\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/threads/chat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"threads",
+						"chat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload File",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Victor/Downloads/database.json"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/assistant/asst_RkHRBbRNfqGiMquar2bFZEDt/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assistant",
+						"asst_RkHRBbRNfqGiMquar2bFZEDt",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -5,8 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.Duration;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.example.project.domain.constants.Constants.*;
 
@@ -36,10 +37,23 @@ public class ThreadService {
                 .block();
     }
 
-    public String runAssistant(String threadId, String assistantId) {
-        Map<String, Object> payload = Map.of(
-                ASSISTANT_ID, assistantId
-        );
+    public String runAssistant(String threadId, String assistantId, String fileId) {
+        Map<String, Object> payload;
+
+        if (Objects.isNull(fileId) || fileId.isBlank()) {
+            payload = Map.of(
+                    ASSISTANT_ID, assistantId
+            );
+        } else {
+            payload = Map.of(
+                    ASSISTANT_ID, assistantId,
+                    TOOL_RESOURCES, Map.of(
+                            CODE_INTERPRETER, Map.of(
+                                    FILE_IDS, List.of(fileId)
+                            )
+                    )
+            );
+        }
 
         return webClient.post()
                 .uri(THREAD_URL + "/" + threadId + RUNS_URL)

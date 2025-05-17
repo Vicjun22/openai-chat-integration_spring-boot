@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.example.project.factory.ThreadFactory.toResponse;
 
 @RestController
@@ -17,21 +19,19 @@ public class ThreadController {
 
     private final ThreadService threadService;
 
-    @Value("${openai.assistant.id}")
-    private String assistantId;
-
     @PostMapping("/chat")
-    public ResponseEntity<ThreadResponse> startChat(@RequestBody SendMessageRequest request,
-                                                    @RequestParam(required = false) String threadId) {
+    public ResponseEntity<ThreadResponse> startChat(@RequestBody SendMessageRequest request) {
 
-        if (threadId == null || threadId.isEmpty()) threadId = threadService.createThread();
+        if (request.getThreadId() == null || request.getThreadId().isEmpty()) request.setThreadId(threadService.createThread());
 
-        threadService.addMessageToThread(threadId, request.getMessage());
-        String runId = threadService.runAssistant(threadId, assistantId);
+        threadService.addMessageToThread(request.getThreadId(), request.getMessage());
 
-        threadService.waitForRunCompletion(threadId, runId);
-        String answer = threadService.getAssistantReply(threadId);
+        String runId = threadService.runAssistant(request.getThreadId(), request.getAssistantId(), request.getFieldId());
 
-        return ResponseEntity.ok(toResponse(threadId, runId, answer));
+        threadService.waitForRunCompletion(request.getThreadId(), runId);
+        String answer = threadService.getAssistantReply(request.getThreadId());
+
+        return ResponseEntity.ok(toResponse(request.getThreadId(), runId, answer));
     }
+
 }

@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.example.project.domain.constants.Constants.*;
 
@@ -19,7 +17,7 @@ public class ThreadService {
 
     public String createThread() {
         return webClient.post()
-                .uri(THREAD_URL)
+                .uri(THREAD_URI)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .map(json -> json.get("id").asText())
@@ -30,33 +28,18 @@ public class ThreadService {
         Map<String, Object> payload = Map.of(ROLE, USER, CONTENT, content);
 
         webClient.post()
-                .uri(THREAD_URL + "/" + threadId + MESSAGES_URL)
+                .uri(THREAD_URI + "/" + threadId + MESSAGES_URI)
                 .bodyValue(payload)
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
     }
 
-    public String runAssistant(String threadId, String assistantId, String fileId) {
-        Map<String, Object> payload;
-
-        if (Objects.isNull(fileId) || fileId.isBlank()) {
-            payload = Map.of(
-                    ASSISTANT_ID, assistantId
-            );
-        } else {
-            payload = Map.of(
-                    ASSISTANT_ID, assistantId,
-                    TOOL_RESOURCES, Map.of(
-                            CODE_INTERPRETER, Map.of(
-                                    FILE_IDS, List.of(fileId)
-                            )
-                    )
-            );
-        }
+    public String runAssistant(String threadId, String assistantId) {
+        Map<String, Object> payload = Map.of(ASSISTANT_ID, assistantId);
 
         return webClient.post()
-                .uri(THREAD_URL + "/" + threadId + RUNS_URL)
+                .uri(THREAD_URI + "/" + threadId + RUNS_URI)
                 .bodyValue(payload)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
@@ -71,7 +54,7 @@ public class ThreadService {
 
         while (attempts < maxAttempts) {
             JsonNode response = webClient.get()
-                    .uri(THREAD_URL + "/" + threadId + RUNS_URL + "/" + runId)
+                    .uri(THREAD_URI + "/" + threadId + RUNS_URI + "/" + runId)
                     .retrieve()
                     .bodyToMono(JsonNode.class)
                     .block();
@@ -98,7 +81,7 @@ public class ThreadService {
 
     public String getAssistantReply(String threadId) {
         JsonNode response = webClient.get()
-                .uri(THREAD_URL + "/" + threadId + MESSAGES_URL)
+                .uri(THREAD_URI + "/" + threadId + MESSAGES_URI)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .block();
@@ -106,7 +89,7 @@ public class ThreadService {
         assert response != null;
         for (JsonNode message : response.get(DATA)) {
             if (ASSISTANT.equals(message.get(ROLE).asText())) {
-                return message.get(CONTENT).get(0).get(TEXT).get(VALUE).asText();
+                return message.get(CONTENT).get(0).get("text").get("value").asText();
             }
         }
 

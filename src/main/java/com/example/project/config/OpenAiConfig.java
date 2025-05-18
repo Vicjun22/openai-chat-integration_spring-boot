@@ -18,7 +18,7 @@ public class OpenAiConfig {
     @Bean
     public WebClient openAiWebClient() {
         return WebClient.builder()
-                .baseUrl(OPENAI_URL)
+                .baseUrl(OPENAI_URI)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, BEARER + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(OPENAI_BETA, ASSISTANTS_V2)

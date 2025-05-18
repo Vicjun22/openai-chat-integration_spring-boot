@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class SendMessageRequest {
 
     public String message;
-    public String fieldId;
     public String assistantId;
     public String threadId;
 }

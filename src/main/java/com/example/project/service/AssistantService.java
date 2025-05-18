@@ -1,6 +1,7 @@
 package com.example.project.service;
 
 import com.example.project.domain.dto.AssistantDTO;
+import com.example.project.exception.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,13 +12,10 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.example.project.domain.constants.Constants.*;
 
@@ -36,32 +34,47 @@ public class AssistantService {
 
     private final WebClient webClient;
 
-    public String newAssistant() {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put(ASSISTANT_NAME, assistantName);
-        payload.put(ASSISTANT_MODEL, assistantModel);
-        payload.put(ASSISTANT_INSTRUCTIONS, assistantInstructions);
+    public String createAssistant() {
+        Map<String, Object> payload = Map.of(
+                ASSISTANT_NAME, assistantName,
+                ASSISTANT_MODEL, assistantModel,
+                ASSISTANT_INSTRUCTIONS, assistantInstructions,
+                ASSISTANT_TOOLS, List.of(Map.of(TYPE, FILE_SEARCH))
+        );
 
-        try {
-            return webClient.post()
-                    .uri(ASSISTANT_URL)
-                    .bodyValue(payload)
-                    .retrieve()
-                    .bodyToMono(JsonNode.class)
-                    .map(json -> json.get("id").asText())
-                    .block();
-        } catch (WebClientResponseException e) {
-            System.err.println("Response body: " + e.getResponseBodyAsString());
-            throw e;
-        }
+        JsonNode response = webClient.post()
+                .uri(ASSISTANT_URI)
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .block();
+
+        if (response == null || !response.has("id"))
+            throw new RuntimeException("Erro ao criar novo Assistant.");
+
+        return response.get("id").asText();
     }
 
     public AssistantDTO getAssistantById(String assistantId) {
         return webClient.get()
-                .uri(ASSISTANT_URL + "/" + assistantId)
+                .uri(ASSISTANT_URI + "/" + assistantId)
                 .retrieve()
                 .bodyToMono(AssistantDTO.class)
                 .block();
+    }
+
+    public String createVectorStore(String assistantId) {
+        JsonNode response = webClient.post()
+                .uri(VECTOR_STORES)
+                .bodyValue(Map.of(NAME, "vs-for-" + assistantId))
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .block();
+
+        if (response == null || !response.has("id"))
+            throw new RuntimeException("Erro ao criar Vector Store.");
+
+        return response.get("id").asText();
     }
 
     public String uploadAndAttachFile(String assistantId, MultipartFile file) {
@@ -78,28 +91,28 @@ public class AssistantService {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM);
 
             JsonNode fileResponse = webClient.post()
-                    .uri(FILES_URL)
+                    .uri(FILES_URI)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .bodyValue(builder.build())
                     .retrieve()
                     .bodyToMono(JsonNode.class)
                     .block();
 
-            assert fileResponse != null;
+            if (fileResponse == null || !fileResponse.has("id"))
+                throw new RuntimeException("Erro no upload do arquivo.");
+
             String fileId = fileResponse.get("id").asText();
 
-            Map<String, Object> payload = Map.of(
+            Map<String, Object> attachPayload = Map.of(
                     TOOL_RESOURCES, Map.of(
-                            CODE_INTERPRETER, Map.of(
-                                    FILE_IDS, List.of(fileId)
-                            )
+                            CODE_INTERPRETER, Map.of(FILE_IDS, List.of(fileId))
                     )
             );
 
             webClient.post()
-                    .uri(ASSISTANT_URL + "/" + assistantId)
+                    .uri(ASSISTANT_URI + "/" + assistantId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(payload)
+                    .bodyValue(attachPayload)
                     .retrieve()
                     .bodyToMono(JsonNode.class)
                     .block();
@@ -107,17 +120,44 @@ public class AssistantService {
             return fileId;
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Falha ao processar o arquivo.", e);
         }
     }
 
-    public JsonNode listFilesForAssistant(String assistantId) {
-        return Objects.requireNonNull(webClient.get()
-                        .uri(ASSISTANT_URL + "/" + assistantId)
-                        .retrieve()
-                        .bodyToMono(JsonNode.class)
-                        .block())
-                .get(TOOL_RESOURCES);
+    public void addFileToVectorStore(String vectorStoreId, String fileId) {
+        webClient.post()
+                .uri(VECTOR_STORES + "/" + vectorStoreId + FILES_URI)
+                .bodyValue(Map.of(FILE_ID, fileId))
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
     }
 
+    public void attachVectorStoreToAssistant(String assistantId, String vectorStoreId) {
+        Map<String, Object> body = Map.of(
+                TOOL_RESOURCES, Map.of(
+                        FILE_SEARCH, Map.of(VECTOR_STORE_IDS, List.of(vectorStoreId))
+                )
+        );
+
+        webClient.post()
+                .uri(ASSISTANT_URI + "/" + assistantId)
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public JsonNode listFilesForAssistant(String assistantId) {
+        JsonNode response = webClient.get()
+                .uri(ASSISTANT_URI + "/" + assistantId)
+                .retrieve()
+                .bodyToMono(JsonNode.class)
+                .block();
+
+        if (response == null || !response.has(TOOL_RESOURCES))
+            throw new NotFoundException("Nenhum arquivo encontrado para o Assistant.");
+
+        return response.get(TOOL_RESOURCES);
+    }
 }

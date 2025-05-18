@@ -1,5 +1,8 @@
 package com.example.project.domain.constants;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Constants {
 
     public static final String OPENAI_URI = "https://api.openai.com/v1";

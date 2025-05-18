@@ -6,9 +6,8 @@ openai:
   api-key: ${OPENAI_TOKEN}
   assistant:
     name: ${ASSISTANT_NAME} #My Assistant
-    model: ${ASSISTANT_MODEL} #gpt-4
+    model: gpt-4
     instructions: ${ASSISTANT_INSTRUCTIONS} # You are a sales assistant...
-    id: ${ASSISTANT_ID} #asst_RkHRBbRNfqGiMquar2bFZEDt
 
 logging:
   level:

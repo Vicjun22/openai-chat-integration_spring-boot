@@ -39,7 +39,7 @@ public class AssistantService {
                 ASSISTANT_NAME, assistantName,
                 ASSISTANT_MODEL, assistantModel,
                 ASSISTANT_INSTRUCTIONS, assistantInstructions,
-                ASSISTANT_TOOLS, List.of(Map.of(TYPE, FILE_SEARCH))
+                ASSISTANT_TOOLS, List.of(Map.of(TYPE, "code_interpreter"))
         );
 
         JsonNode response = webClient.post()

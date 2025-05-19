@@ -1,7 +1,7 @@
 package com.example.project.controller;
 
-import com.example.project.domain.dto.SendMessageRequest;
-import com.example.project.domain.dto.ThreadResponse;
+import com.example.project.domain.request.SendMessageRequest;
+import com.example.project.domain.response.ThreadResponse;
 import com.example.project.service.ThreadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

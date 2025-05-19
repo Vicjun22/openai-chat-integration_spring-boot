@@ -1,6 +1,6 @@
 package com.example.project.factory;
 
-import com.example.project.domain.dto.UploadFileToAssistantResponse;
+import com.example.project.domain.response.UploadFileToAssistantResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -16,7 +16,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>project</name>
-	<description>OpenAI Assist integration</description>
+	<description>OpenAI: Chat integration with Spring Boot</description>
 
 	<developers>
 		<developer>
@@ -50,7 +50,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!--	OpenAI HTTP Client	-->
+		<!--	WebFlux	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>

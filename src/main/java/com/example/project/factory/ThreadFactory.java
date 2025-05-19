@@ -1,6 +1,6 @@
 package com.example.project.factory;
 
-import com.example.project.domain.dto.ThreadResponse;
+import com.example.project.domain.response.ThreadResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

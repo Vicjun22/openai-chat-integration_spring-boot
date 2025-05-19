@@ -1,4 +1,4 @@
-package com.example.project.domain.dto;
+package com.example.project.domain.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssistantDTO {
+public class AssistantResponse {
 
     public String id;
     public String object;

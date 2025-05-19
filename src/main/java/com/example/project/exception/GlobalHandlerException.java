@@ -11,6 +11,11 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RequiredArgsConstructor
 public class GlobalHandlerException {
 
+    @ExceptionHandler(CustomServiceException.class)
+    public ResponseEntity<Object> handlerExceptionResolver(CustomServiceException exception) {
+        return ResponseEntity.status(exception.getStatus()).body(exception);
+    }
+
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<Object> handlerExceptionResolver(WebClientResponseException exception) {
         return ResponseEntity.status(exception.getStatusCode()).body(exception.getResponseBodyAsString());

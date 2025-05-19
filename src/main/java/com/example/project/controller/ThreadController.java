@@ -21,13 +21,11 @@ public class ThreadController {
 
     @PostMapping("/chat")
     public ResponseEntity<ThreadResponse> startChat(@RequestBody SendMessageRequest request) {
-
-        if (request.getThreadId() == null || request.getThreadId().isEmpty()) request.setThreadId(threadService.createThread());
-
+        if (request.getThreadId() == null || request.getThreadId().isEmpty()) {
+            request.setThreadId(threadService.createThread());
+        }
         threadService.addMessageToThread(request.getThreadId(), request.getMessage());
-
         String runId = threadService.runAssistant(request.getThreadId(), request.getAssistantId());
-
         threadService.waitForRunCompletion(request.getThreadId(), runId);
         String answer = threadService.getAssistantReply(request.getThreadId());
 

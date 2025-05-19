@@ -1,7 +1,9 @@
 package com.example.project.service;
 
+import com.example.project.exception.CustomServiceException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -20,7 +22,7 @@ public class ThreadService {
                 .uri(THREAD_URI)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(json -> json.get("id").asText())
+                .map(json -> json.get(ID).asText())
                 .block();
     }
 
@@ -43,7 +45,7 @@ public class ThreadService {
                 .bodyValue(payload)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(json -> json.get("id").asText())
+                .map(json -> json.get(ID).asText())
                 .block();
     }
 
@@ -64,7 +66,7 @@ public class ThreadService {
 
             if (COMPLETED.equals(status)) return;
             else if (FAILED.equals(status)) {
-                throw new IllegalStateException("Run failed.");
+                throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Run failed.");
             }
 
             attempts++;
@@ -72,11 +74,11 @@ public class ThreadService {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException("Thread interrupted", e);
+                throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Thread interrupted");
             }
         }
 
-        throw new IllegalStateException("Timeout.");
+        throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Timeout.");
     }
 
     public String getAssistantReply(String threadId) {
@@ -89,7 +91,7 @@ public class ThreadService {
         assert response != null;
         for (JsonNode message : response.get(DATA)) {
             if (ASSISTANT.equals(message.get(ROLE).asText())) {
-                return message.get(CONTENT).get(0).get("text").get("value").asText();
+                return message.get(CONTENT).get(0).get(TEXT).get(VALUE).asText();
             }
         }
 

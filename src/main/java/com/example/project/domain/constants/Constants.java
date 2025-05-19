@@ -25,19 +25,20 @@ public class Constants {
     public static final String ASSISTANT_TOOLS = "tools";
 
     public static final String ID = "id";
+    public static final String TEXT = "text";
+    public static final String DATA = "data";
     public static final String TYPE = "type";
-    public static final String CODE_INTERPRETER = "code_interpreter";
-    public static final String TOOL_RESOURCES = "tool_resources";
-
     public static final String ROLE = "role";
     public static final String USER = "user";
-    public static final String CONTENT = "content";
-    public static final String STATUS = "status";
-    public static final String COMPLETED = "completed";
+    public static final String VALUE = "value";
     public static final String FAILED = "failed";
-    public static final String DATA = "data";
+    public static final String STATUS = "status";
+    public static final String CONTENT = "content";
+    public static final String COMPLETED = "completed";
     public static final String ASSISTANT = "assistant";
     public static final String FILE_SEARCH = "file_search";
+    public static final String TOOL_RESOURCES = "tool_resources";
+    public static final String CODE_INTERPRETER = "code_interpreter";
 
     public static final String NO_ANSWER_FOUND = "No answer found";
 

@@ -1,12 +1,14 @@
 package com.example.project.service;
 
 import com.example.project.domain.response.AssistantResponse;
+import com.example.project.exception.CustomServiceException;
 import com.example.project.exception.NotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,9 @@ public class AssistantService {
                 .bodyToMono(JsonNode.class)
                 .block();
 
-        if (response == null || !response.has(ID)) throw new RuntimeException("Error creating a new assistant.");
+        if (response == null || !response.has(ID)) {
+            throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Error creating a new assistant.");
+        }
         return response.get(ID).asText();
     }
 
@@ -70,7 +74,7 @@ public class AssistantService {
             attachFileToAssistant(assistantId, fileId);
             return fileId;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to process the file.", e);
+            throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Failed to process the file.");
         }
     }
 
@@ -96,7 +100,7 @@ public class AssistantService {
                 .block();
 
         if (response == null || !response.has(ID)) {
-            throw new RuntimeException("Failed to upload file: missing ID in response.");
+            throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Failed to upload file: missing ID in response.");
         }
 
         return response.get(ID).asText();
@@ -131,7 +135,7 @@ public class AssistantService {
                 .block();
 
         if (response == null || !response.has(ID)) {
-            throw new RuntimeException("Failed to create vector store: missing 'id' in response.");
+            throw new CustomServiceException(HttpStatus.BAD_REQUEST, "Failed to create vector store: missing 'id' in response.");
         }
 
         return response.get(ID).asText();
@@ -169,8 +173,9 @@ public class AssistantService {
                 .bodyToMono(JsonNode.class)
                 .block();
 
-        if (response == null || !response.has(TOOL_RESOURCES))
+        if (response == null || !response.has(TOOL_RESOURCES)) {
             throw new NotFoundException("No files attached to the assistant were found.");
+        }
 
         return response.get(TOOL_RESOURCES);
     }

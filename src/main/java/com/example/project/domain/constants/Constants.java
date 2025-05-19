@@ -40,6 +40,6 @@ public class Constants {
     public static final String TOOL_RESOURCES = "tool_resources";
     public static final String CODE_INTERPRETER = "code_interpreter";
 
-    public static final String NO_ANSWER_FOUND = "No answer found";
+    public static final String NO_ANSWER_FOUND = "No answer found.";
 
 }

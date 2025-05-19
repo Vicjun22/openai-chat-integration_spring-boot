@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: project
+
+openai:
+  api-key: "test-api-key"
+  assistant:
+    name: "Test Assistant"
+    model: "gpt-4"
+    instructions: "You are a test assistant..."
+
+logging:
+  level:
+    org.springframework.web.reactive.function.client.ExchangeFunctions: INFO

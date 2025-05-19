@@ -83,7 +83,7 @@ public class OpenAiConfig {
 
 Now that we’ve completed the configuration, we can move on to explaining the available endpoints.
 
-## Assistant Controller
+## ⚙️ Assistant Controller
 
 `POST /assistant/new`
 
@@ -135,7 +135,7 @@ curl --location 'http://localhost:8080/assistant/asst_js0TkCNlOgIxqt6ir3gGmt2O/f
 --header 'OpenAI-Beta: assistants=v2'
 ```
 
-## Thread Controller
+## ⚙️ Thread Controller
 
 `POST /threads/chat`
 
@@ -190,7 +190,7 @@ A file with prompt instructions for the Assistant (written in Brazilian Portugue
 
 ---
 
-## Useful Links
+## 🔗 Useful Links
 
 - [Spring Initializr](https://start.spring.io/) - Quickly bootstrap a Spring Boot project.
 - [OpenAI Platform](https://platform.openai.com/docs/overview) - Learn more about OpenAI and its developer platform.

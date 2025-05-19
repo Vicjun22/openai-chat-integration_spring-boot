@@ -29,10 +29,10 @@ public class AssistantService {
     private final String assistantInstructions;
     private final WebClient webClient;
 
-    private AssistantService(@Value("${openai.assistant.name}") String assistantName,
-                             @Value("${openai.assistant.model}") String assistantModel,
-                             @Value("${openai.assistant.instructions}") String assistantInstructions,
-                             WebClient webClient) {
+    public AssistantService(@Value("${openai.assistant.name}") String assistantName,
+                            @Value("${openai.assistant.model}") String assistantModel,
+                            @Value("${openai.assistant.instructions}") String assistantInstructions,
+                            WebClient webClient) {
         this.assistantName = assistantName;
         this.assistantModel = assistantModel;
         this.assistantInstructions = assistantInstructions;
